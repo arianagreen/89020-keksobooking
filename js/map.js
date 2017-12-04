@@ -71,7 +71,7 @@ function createMapPins(array){
   for (var i = 0; i < array.length; i++) {
      var newMapPin = document.createElement('button');
      newMapPin.className = 'map__pin';
-     newMapPin.setAttribute('style', `left: ${array[i].location.x}, top: ${array[i].location.y}`);
+     newMapPin.setAttribute('style', `left: ${array[i].location.x}px; top: ${array[i].location.y}px`);
 
      var newMapPinImage = document.createElement('img');
      newMapPinImage.setAttribute('src', `${array[i].author.avatar}`);
