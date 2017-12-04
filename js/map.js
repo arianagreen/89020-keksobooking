@@ -80,9 +80,12 @@ function createMapPins(array){
      newMapPinImage.draggable = 'true';
 
      newMapPin.appendChild(newMapPinImage);
+     console.log(newMapPin);
      fragment.appendChild(newMapPin);
   }
 }
+
+createMapPins(simularAds);
 
 // 4. Отрисуйте сгенерированные DOM-элементы в блок .map__pins. Для вставки элементов используйте DocumentFragment
 
