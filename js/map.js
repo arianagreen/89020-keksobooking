@@ -97,6 +97,12 @@ function createMapPins(array){
 
 var mapCardTemplate = document.querySelector('template').content.querySelector('article.map__card');
 
+var offerTypes = {
+  flat: 'Квартира',
+  bungalo: 'Бунгало',
+  house: 'Дом'
+}
+
 function createMapCard(adInfo){ // принимает элемент массива simularAds
   var newMapCard = mapCardTemplate.cloneNode(true);
 
@@ -105,13 +111,7 @@ function createMapCard(adInfo){ // принимает элемент масси�
 
   var offerTypeElement =  newMapCard.querySelector('h4');
 
-  if (adInfo.offer.type == 'flat') {
-    offerTypeElement.textContent = 'Квартира';
-  } else if (adInfo.offer.type == 'bungalo') {
-    offerTypeElement.textContent = 'Бунгало';
-  } else {
-    offerTypeElement.textContent = 'Дом';
-  }
+  offerTypeElement.textContent = offerTypes[adInfo.offer.type];
 
   newMapCard.querySelector('p:nth-of-type(3)').textContent = `${adInfo.offer.rooms} комнаты для ${adInfo.offer.guests} гостей`;
   newMapCard.querySelector('p:nth-of-type(4)').textContent = `Заезд после ${adInfo.offer.checkin}, выезд до ${adInfo.offer.checkout}`;
@@ -120,21 +120,14 @@ function createMapCard(adInfo){ // принимает элемент масси�
   var popupFeaturesList = newMapCard.querySelectorAll('.feature');
   var popupFeaturesFragment = document.createDocumentFragment();
 
-  for (var i = 0; i < popupFeaturesList.length; i++) {
-    var classNames = popupFeaturesList[i].className;
-
-    for(var j = 0; j < adInfo.offer.features.length; j++) {
-      var feature = adInfo.offer.features[j];
-
-      if (classNames.indexOf('feature--' + feature) >= 0){ //проверка совпадения названия класса и бонусов локации)
-        var excessElement = newMapCard.querySelector('.feature--' + feature);
-        popupFeaturesFragment.appendChild(excessElement);
-      }
-    }
-  }
-
   popupFeatures.innerHTML = '';
-  popupFeatures.appendChild(popupFeaturesFragment);
+
+  for (var i = 0; i < adInfo.offer.features.length; i++) {
+    var feature = adInfo.offer.features[i];
+    var featureElement = document.createElement('li');
+    featureElement.classList.add('feature', `feature--${feature}`);
+    popupFeatures.appendChild(featureElement);
+  }
 
   newMapCard.querySelector('p:last-of-type').innerContent = adInfo.offer.description;
   newMapCard.querySelector('img').setAttribute('src', `${adInfo.author.avatar}`);
@@ -142,12 +135,7 @@ function createMapCard(adInfo){ // принимает элемент масси�
   return newMapCard;
 }
 
-
-
 // document.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', newMapCard);
-
-
-
 
 
 
