@@ -30,14 +30,14 @@ function createSimularAds(data, quantity) {
 
   var ads = [];
 
-  for (i = 0; i < quantity; i++) {
+  for (var i = 0; i < quantity; i++) {
     var ad = {};
     ad.author = {avatar: `img/avatars/user0${i + 1}.png`};
 
     ad.location = {};
 
     ad.location.x = getRandomIntInclusive(300, 900) - document.querySelector('.map__pin').offsetWidth / 2;
-    ad.location.y = getRandomIntInclusive(100, 500) - document.querySelector('.map__pin').offsetHeight;
+    ad.location.y = getRandomIntInclusive(150, 500) - document.querySelector('.map__pin').offsetHeight;
 
     ad.offer = {};
 
@@ -61,7 +61,7 @@ function createSimularAds(data, quantity) {
 
 var simularAds = createSimularAds(dataForSimularAds, 8);
 
-document.querySelector('section.map').classList.remove('map--faded');
+// document.querySelector('section.map').classList.remove('map--faded');
 
 // 3. На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива
 
@@ -70,6 +70,8 @@ var fragment = document.createDocumentFragment();
 function createMapPins(array){
   for (var i = 0; i < array.length; i++) {
      var newMapPin = document.createElement('button');
+     newMapPin.setAttribute('data', `${i}`);
+     newMapPin.setAttribute('tabindex', '0');
      newMapPin.className = 'map__pin';
      newMapPin.setAttribute('style', `left: ${array[i].location.x}px; top: ${array[i].location.y}px`);
 
@@ -80,63 +82,131 @@ function createMapPins(array){
      newMapPinImage.draggable = 'true';
 
      newMapPin.appendChild(newMapPinImage);
-     console.log(newMapPin);
      fragment.appendChild(newMapPin);
   }
 }
 
-createMapPins(simularAds);
+// createMapPins(simularAds);
 
 // 4. Отрисуйте сгенерированные DOM-элементы в блок .map__pins. Для вставки элементов используйте DocumentFragment
 
-document.querySelector('.map__pins').appendChild(fragment);
+// document.querySelector('.map__pins').appendChild(fragment);
 
 
-// 5. создать DOM-элемент объявления на основе первого первого по порядку элемента из сгенерированного массива и шаблона template article.map__card
+// 5. создать DOM-элемент объявления на основе первого по порядку элемента из сгенерированного массива и шаблона template article.map__card
 
-var mapCard = document.querySelector('template').content.querySelector('article.map__card');
+var mapCardTemplate = document.querySelector('template').content.querySelector('article.map__card');
 
-var newMapCard = mapCard.cloneNode(true);
-
-var firstAd = simularAds[0];
-
-newMapCard.querySelector('h3').textContent = firstAd.offer.title;
-newMapCard.querySelector('.popup__price').textContent = `${firstAd.offer.price}&#x20bd;/ночь`;
-
-var offerTypeElement =  newMapCard.querySelector('h4');
-
-if (firstAd.offer.type == 'flat') {
-  offerTypeElement.textContent = 'Квартира';
-} else if (firstAd.offer.type == 'bungalo') {
-  offerTypeElement.textContent = 'Бунгало';
-} else {
-  offerTypeElement.textContent = 'Дом';
+var offerTypes = {
+  flat: 'Квартира',
+  bungalo: 'Бунгало',
+  house: 'Дом'
 }
 
-newMapCard.querySelector('p:nth-of-type(3)').textContent = `${firstAd.offer.rooms} комнаты для ${firstAd.offer.guests} гостей`;
-newMapCard.querySelector('p:nth-of-type(4)').textContent = `Заезд после ${firstAd.offer.checkin}, выезд до ${firstAd.offer.checkout}`;
+function createMapCard(adInfo){ // принимает элемент массива simularAds
+  var newMapCard = mapCardTemplate.cloneNode(true);
 
-var popupFeatures = newMapCard.querySelector('.popup__features');
-var popupFeaturesList = newMapCard.querySelectorAll('.feature');
-var popupFeaturesFragment = document.createDocumentFragment();
+  newMapCard.querySelector('h3').textContent = adInfo.offer.title;
+  newMapCard.querySelector('.popup__price').textContent = `${adInfo.offer.price}&#x20bd;/ночь`;
 
-for(var i = 0; i < popupFeaturesList.length; i++) {
-  var classNames = popupFeaturesList[i].className;
+  var offerTypeElement =  newMapCard.querySelector('h4');
 
-  for(var j = 0; j < firstAd.offer.features.length; j++) {
-    var feature = firstAd.offer.features[j];
+  offerTypeElement.textContent = offerTypes[adInfo.offer.type];
 
-    if (classNames.indexOf('feature--' + feature) >= 0){ //проверка совпадения названия класса и бонусов локации)
-      var excessElement = newMapCard.querySelector('.feature--' + feature);
-      popupFeaturesFragment.appendChild(excessElement);
-    }
+  newMapCard.querySelector('p:nth-of-type(3)').textContent = `${adInfo.offer.rooms} комнаты для ${adInfo.offer.guests} гостей`;
+  newMapCard.querySelector('p:nth-of-type(4)').textContent = `Заезд после ${adInfo.offer.checkin}, выезд до ${adInfo.offer.checkout}`;
+
+  var popupFeatures = newMapCard.querySelector('.popup__features');
+  var popupFeaturesList = newMapCard.querySelectorAll('.feature');
+  var popupFeaturesFragment = document.createDocumentFragment();
+
+  popupFeatures.innerHTML = '';
+
+  for (var i = 0; i < adInfo.offer.features.length; i++) {
+    var feature = adInfo.offer.features[i];
+    var featureElement = document.createElement('li');
+    featureElement.classList.add('feature', `feature--${feature}`);
+    popupFeatures.appendChild(featureElement);
+  }
+
+  newMapCard.querySelector('p:last-of-type').innerContent = adInfo.offer.description;
+  newMapCard.querySelector('img').setAttribute('src', `${adInfo.author.avatar}`);
+
+  return newMapCard;
+}
+
+// document.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', newMapCard);
+
+
+
+
+
+
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
+var mapPinMain = document.querySelector('.map__pin--main');
+var map = document.querySelector('.map');
+var noticeForm = document.querySelector('.notice__form');
+var mapPins;
+var mapPin = null;
+var popupCloseButton = null;
+var mapCard = null;
+
+function onPopupEscPress(evt){
+  if (evt.keyCode == ESC_KEYCODE){
+    removeMapCard()
   }
 }
 
-popupFeatures.innerHTML = '';
-popupFeatures.appendChild(popupFeaturesFragment);
+function removeMapCard(){
+  map.removeChild(mapCard);
+  mapCard = null;
+  mapPin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', onPopupEscPress);
+}
 
-newMapCard.querySelector('p:last-of-type').innerContent = firstAd.offer.description;
-newMapCard.querySelector('img').setAttribute('src', `${firstAd.author.avatar}`);
+function showMapCard(){
+  var index = mapPin.getAttribute('data');
+  if (index !== null) {
+    mapCard = createMapCard(simularAds[index]);
+    document.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', mapCard);
+    document.addEventListener('keydown', onPopupEscPress);
+    popupCloseButton = mapCard.querySelector('.popup__close');
+    popupCloseButton.addEventListener('click', removeMapCard);
+  }
+}
 
-document.querySelector('.map__filters-container').insertAdjacentElement('beforebegin', newMapCard);
+function onMapPinCLick(evt){
+  if (mapPin) {
+    mapPin.classList.remove('map__pin--active');
+  }
+
+  if (mapCard) {
+    removeMapCard()
+  }
+
+  mapPin = evt.currentTarget;
+  mapPin.classList.add('map__pin--active');
+
+  showMapCard();
+}
+
+function onMapPinMainMouseup(){
+  map.classList.remove('map--faded');
+  createMapPins(simularAds);
+  document.querySelector('.map__pins').appendChild(fragment);
+  noticeForm.classList.remove('notice__form--disabled');
+  mapPins = document.querySelectorAll('.map__pin');
+
+  for (var i = 0; i < mapPins.length; i++){
+    mapPins[i].addEventListener('click', onMapPinCLick);
+    mapPins[i].addEventListener('keydown', function(evt){
+      if (evt.keyCode == ENTER_KEYCODE) {
+        onMapPinCLick();
+      }
+    });
+  }
+}
+
+mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
