@@ -337,6 +337,5 @@ addressInput.addEventListener('invalid', function() {
 submitButton.addEventListener('click', function(evt) {
   if (addressInput.value.length === 0) {
     evt.preventDefault();
-    // addressInput.setCustomValidity('Обязательное поле');
   }
 })
