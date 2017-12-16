@@ -225,9 +225,17 @@ var roomNumberInput = document.querySelector('#room_number');
 var capacityInput = document.querySelector('#capacity');
 var submitButton = document.querySelector('.form__submit');
 var titleInput = document.querySelector('#title');
-var adressInput = document.querySelector('#address');
+var addressInput = document.querySelector('#address');
 
 var inputs = document.querySelectorAll('input');
+
+addressInput.addEventListener('focusin', function() {
+  addressInput.setAttribute('readonly', 'true');
+})
+
+addressInput.addEventListener('focusout', function() {
+  addressInput.setAttribute('readonly', 'false');
+})
 
 timeInInput.addEventListener('input', function(evt){
   var target = evt.target;
@@ -298,6 +306,7 @@ roomNumberInput.addEventListener('input', function(evt){
 
 inputs.forEach(function(input) {
   input.addEventListener('invalid', function() {
+
     if (input.validity.valid === false) {
       input.setAttribute('style', 'border-color: red');
     }
@@ -314,4 +323,20 @@ inputs.forEach(function(input) {
       input.setCustomValidity('');
     }
   })
+})
+
+addressInput.addEventListener('invalid', function() {
+  if (input.validity.valueMissing) {
+    input.setCustomValidity('Обязательное поле');
+  } else {
+    input.setCustomValidity('');
+  }
+
+})
+
+submitButton.addEventListener('click', function(evt) {
+  if (addressInput.value.length === 0) {
+    evt.preventDefault();
+    // addressInput.setCustomValidity('Обязательное поле');
+  }
 })
