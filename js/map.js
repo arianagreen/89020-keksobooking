@@ -257,11 +257,7 @@ var typesAndPrices = {
 
 typeInput.addEventListener('input', function(evt){
   var target = evt.target;
-  for (var key in typesAndPrices){
-    if (target.value == key) {
-      priceInput.setAttribute('min', `${typesAndPrices[key]}`);
-    }
-  }
+  priceInput.setAttribute('min', `${typesAndPrices[target.value]}`);
 })
 
 var roomsAndCapacities = {
@@ -284,15 +280,13 @@ roomNumberInput.addEventListener('input', function(evt){
     if ( guests.indexOf(+option.value) < 0 ) {
       option.disabled = true;
     }
-    if ( guests.indexOf(+option.value) === 0 ) {
-      option.selected = true;
-    }
+    option.selected = guests.indexOf(+option.value) === 0;
   });
 })
 
 inputs.forEach(function(input) {
 
-  input.addEventListener('invalid', function() {
+  input.addEventListener('input', function() {
 
     input.setAttribute('style', 'border-color: red');
 
@@ -306,6 +300,7 @@ inputs.forEach(function(input) {
       input.setCustomValidity('Значение должно быть больше или равно ' + min);
     } else {
       input.setCustomValidity('');
+      input.setAttribute('style', 'border-color: green');
     }
   })
 })
