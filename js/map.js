@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 // 1. Создайте массив, состоящий из 8 сгенерированных JS объектов, которые будут описывать похожие объявления неподалеку
 
 // немного исходных данных
@@ -216,7 +218,6 @@ mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
 
 // валидация
 
-
 var timeInInput = document.querySelector('#timein');
 var timeOutInput = document.querySelector('#timeout');
 var typeInput = document.querySelector('#type');
@@ -226,8 +227,8 @@ var capacityInput = document.querySelector('#capacity');
 var submitButton = document.querySelector('.form__submit');
 var titleInput = document.querySelector('#title');
 var addressInput = document.querySelector('#address');
-
 var inputs = document.querySelectorAll('input');
+
 
 addressInput.addEventListener('focusin', function() {
   addressInput.setAttribute('readonly', 'true');
@@ -263,53 +264,37 @@ typeInput.addEventListener('input', function(evt){
   }
 })
 
+var roomsAndCapacities = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+}
+
 var capacityOptions = capacityInput.querySelectorAll('option');
 
 roomNumberInput.addEventListener('input', function(evt){
   var target = evt.target;
 
-  capacityOptions.forEach(function(item){
-    item.removeAttribute('disabled');
-  })
+  var guests = roomsAndCapacities[target.value];
 
-  if (target.value == '1'){
-    capacityInput.value = '1';{
-      capacityOptions.forEach(function(option){
-        if (option.value !== '1'){
-          option.setAttribute('disabled', true);
-        }
-      })
+  capacityOptions.forEach(function(option) {
+    option.removeAttribute('disabled');
+    option.removeAttribute('selected');
+    if ( guests.indexOf(+option.value) < 0 ) {
+      option.disabled = true;
     }
-  } else if (target.value == '2') {
-    capacityInput.value = '1';
-    capacityOptions.forEach(function(option){
-      if (option.value < 1 || option.value > 2){
-        option.setAttribute('disabled', true);
-      }
-    })
-  } else if (target.value == '3') {
-    capacityInput.value = '1';
-    capacityOptions.forEach(function(option){
-      if (option.value < 1){
-        option.setAttribute('disabled', true);
-      }
-    })
-  } else if (target.value == '100'){
-    capacityInput.value = '0';
-    capacityOptions.forEach(function(option){
-      if (option.value !== '0'){
-        option.setAttribute('disabled', true);
-      }
-    })
-  }
+    if ( guests.indexOf(+option.value) === 0 ) {
+      option.selected = true;
+    }
+  });
 })
 
 inputs.forEach(function(input) {
+
   input.addEventListener('invalid', function() {
 
-    if (input.validity.valid === false) {
-      input.setAttribute('style', 'border-color: red');
-    }
+    input.setAttribute('style', 'border-color: red');
 
     if (input.validity.tooShort) {
       var minlength = input.getAttribute('minlength');
@@ -323,15 +308,6 @@ inputs.forEach(function(input) {
       input.setCustomValidity('');
     }
   })
-})
-
-addressInput.addEventListener('invalid', function() {
-  if (input.validity.valueMissing) {
-    input.setCustomValidity('Обязательное поле');
-  } else {
-    input.setCustomValidity('');
-  }
-
 })
 
 submitButton.addEventListener('click', function(evt) {
