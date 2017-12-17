@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 // 1. Создайте массив, состоящий из 8 сгенерированных JS объектов, которые будут описывать похожие объявления неподалеку
 
 // немного исходных данных
@@ -100,7 +102,8 @@ var mapCardTemplate = document.querySelector('template').content.querySelector('
 var offerTypes = {
   flat: 'Квартира',
   bungalo: 'Бунгало',
-  house: 'Дом'
+  house: 'Дом',
+  palace: 'Дворец'
 }
 
 function createMapCard(adInfo){ // принимает элемент массива simularAds
@@ -203,10 +206,107 @@ function onMapPinMainMouseup(){
     mapPins[i].addEventListener('click', onMapPinCLick);
     mapPins[i].addEventListener('keydown', function(evt){
       if (evt.keyCode == ENTER_KEYCODE) {
-        onMapPinCLick();
+        onMapPinCLick(evt);
       }
     });
   }
 }
 
 mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
+
+
+
+// валидация
+
+var timeInInput = document.querySelector('#timein');
+var timeOutInput = document.querySelector('#timeout');
+var typeInput = document.querySelector('#type');
+var priceInput = document.querySelector('#price');
+var roomNumberInput = document.querySelector('#room_number');
+var capacityInput = document.querySelector('#capacity');
+var submitButton = document.querySelector('.form__submit');
+var titleInput = document.querySelector('#title');
+var addressInput = document.querySelector('#address');
+var inputs = document.querySelectorAll('input');
+
+
+addressInput.addEventListener('focusin', function() {
+  addressInput.setAttribute('readonly', 'true');
+})
+
+addressInput.addEventListener('focusout', function() {
+  addressInput.setAttribute('readonly', 'false');
+})
+
+timeInInput.addEventListener('input', function(evt){
+  var target = evt.target;
+  timeOutInput.value = target.value;
+})
+
+timeOutInput.addEventListener('input', function(evt){
+  var target = evt.target;
+  timeInInput.value = target.value;
+})
+
+var typesAndPrices = {
+  flat: '1000',
+  bungalo: '0',
+  house: '5000',
+  palace: '10000'
+}
+
+typeInput.addEventListener('input', function(evt){
+  var target = evt.target;
+  priceInput.setAttribute('min', `${typesAndPrices[target.value]}`);
+})
+
+var roomsAndCapacities = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+}
+
+var capacityOptions = capacityInput.querySelectorAll('option');
+
+roomNumberInput.addEventListener('input', function(evt){
+  var target = evt.target;
+
+  var guests = roomsAndCapacities[target.value];
+
+  capacityOptions.forEach(function(option) {
+    option.removeAttribute('disabled');
+    option.removeAttribute('selected');
+    if ( guests.indexOf(+option.value) < 0 ) {
+      option.disabled = true;
+    }
+    option.selected = guests.indexOf(+option.value) === 0;
+  });
+})
+
+inputs.forEach(function(input) {
+
+  input.addEventListener('input', function() {
+
+    input.setAttribute('style', 'border-color: red');
+
+    if (input.validity.tooShort) {
+      var minlength = input.getAttribute('minlength');
+      input.setCustomValidity('Минимально допустимое количество символов ' + minlength + '. Длина текста сейчас: ' + input.value.length);
+    } else if (input.validity.valueMissing) {
+      input.setCustomValidity('Обязательное поле');
+    } else if (input.validity.rangeUnderflow) {
+      var min = input.getAttribute('min');
+      input.setCustomValidity('Значение должно быть больше или равно ' + min);
+    } else {
+      input.setCustomValidity('');
+      input.setAttribute('style', 'border-color: green');
+    }
+  })
+})
+
+submitButton.addEventListener('click', function(evt) {
+  if (addressInput.value.length === 0) {
+    evt.preventDefault();
+  }
+})
