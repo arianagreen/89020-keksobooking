@@ -80,7 +80,9 @@
       }
 
       return ads;
-    }
+    },
+
+    simularAds: window.data.createAds(8)
 
   }
 })();

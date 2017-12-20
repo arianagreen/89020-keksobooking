@@ -19,24 +19,10 @@ var pin = null;
 var popupCloseButton = null;
 var card = null;
 
-var simularAds = window.data.createAds(8);
+// var simularAds = window.data.createAds(8);
 
 
 
-function onPinCLick(evt){
-  if (pin) {
-    pin.classList.remove('map__pin--active');
-  }
-
-  if (card) {
-    window.cardOptions.removeCard(card, pin, document.elements.map);
-  }
-
-  pin = evt.currentTarget;
-  pin.classList.add('map__pin--active');
-  card = window.cardOptions.showCard(pin, simularAds, document.elements.map);
-
-}
 
 function onPinMainMouseup(){
   document.elements.map.classList.remove('map--faded');
@@ -44,14 +30,6 @@ function onPinMainMouseup(){
   var pinFragment = window.pinOptions.createPins(simularAds);
   document.querySelector('.map__pins').appendChild(pinFragment);
   noticeForm.classList.remove('notice__form--disabled');
-  pins = document.querySelectorAll('.map__pin');
-
-  for (var i = 0; i < pins.length; i++){
-    pins[i].addEventListener('click', onPinCLick);
-    pins[i].addEventListener('keydown', function(evt){
-      window.util.isEnterEvent(evt, onPinCLick);
-    });
-  }
 }
 
 pinMain.addEventListener('mouseup', onPinMainMouseup);

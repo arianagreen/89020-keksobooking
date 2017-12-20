@@ -23,11 +23,37 @@
          newPinImage.draggable = 'true';
 
          newPin.appendChild(newPinImage);
+
+         newPin.addEventListener('click', window.pinOptions.onPinCLick);
+         newPin.addEventListener('keydown', function(evt){
+           window.util.isEnterEvent(evt, window.pinOptions.onPinCLick);
+         });
+
          fragment.appendChild(newPin);
       }
 
       return fragment;
+    },
+
+    onPinCLick: function(evt){
+
+      var pinActive = document.querySelector('.map__pin--active');
+      var card = document.querySelector('.map__card');
+
+      if (pinActive) {
+        pin.classList.remove('map__pin--active');
+      }
+
+      if (card) {
+        window.cardOptions.removeCard(card, pin, document.elements.map);
+      }
+
+      var pin = evt.currentTarget;
+      pin.classList.add('map__pin--active');
+      card = window.cardOptions.showCard(pin, simularAds, document.elements.map);
+
     }
+
   };
 
 })();
