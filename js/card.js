@@ -48,7 +48,10 @@
       document.elements.map.removeChild(card);
       card = null;
       pin = document.querySelector('.map__pin--active');
-      pin.classList.remove('map__pin--active');
+      if (pin) {
+        pin.classList.remove('map__pin--active');
+      }
+
       document.removeEventListener('keydown', window.cardOptions.onCardEscPress);
     },
 

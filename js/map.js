@@ -11,27 +11,22 @@
   }
 
 
-var pinMain = document.querySelector('.map__pin--main');
-// var map = document.querySelector('.map');
-var noticeForm = document.querySelector('.notice__form');
-var pins = [];
-var pin = null;
-var popupCloseButton = null;
-var card = null;
-
-// var simularAds = window.data.createAds(8);
+  var pinMain = document.querySelector('.map__pin--main');
+  // var map = document.querySelector('.map');
+  var noticeForm = document.querySelector('.notice__form');
+  var pin = null;
+  var popupCloseButton = null;
+  var card = null;
 
 
+  function onPinMainMouseup(){
+    document.elements.map.classList.remove('map--faded');
 
+    var pinFragment = window.pinOptions.createPins(window.data.simularAds);
+    document.querySelector('.map__pins').appendChild(pinFragment);
+    noticeForm.classList.remove('notice__form--disabled');
+  }
 
-function onPinMainMouseup(){
-  document.elements.map.classList.remove('map--faded');
-
-  var pinFragment = window.pinOptions.createPins(simularAds);
-  document.querySelector('.map__pins').appendChild(pinFragment);
-  noticeForm.classList.remove('notice__form--disabled');
-}
-
-pinMain.addEventListener('mouseup', onPinMainMouseup);
+  pinMain.addEventListener('mouseup', onPinMainMouseup);
 
 })();

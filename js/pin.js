@@ -41,7 +41,7 @@
       var card = document.querySelector('.map__card');
 
       if (pinActive) {
-        pin.classList.remove('map__pin--active');
+        pinActive.classList.remove('map__pin--active');
       }
 
       if (card) {
@@ -50,7 +50,7 @@
 
       var pin = evt.currentTarget;
       pin.classList.add('map__pin--active');
-      card = window.cardOptions.showCard(pin, simularAds, document.elements.map);
+      card = window.cardOptions.showCard(pin, window.data.simularAds, document.elements.map);
 
     }
 
